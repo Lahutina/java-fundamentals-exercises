@@ -1,6 +1,7 @@
 package com.bobocode.cs;
 
-import com.bobocode.util.ExerciseNotCompletedException;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 /**
  * {@link ArrayList} is an implementation of {@link List} interface. This resizable data structure
@@ -12,6 +13,8 @@ import com.bobocode.util.ExerciseNotCompletedException;
  * @author Serhii Hryhus
  */
 public class ArrayList<T> implements List<T> {
+    private Object[] list;
+    private int size;
 
     /**
      * This constructor creates an instance of {@link ArrayList} with a specific capacity of an array inside.
@@ -19,8 +22,12 @@ public class ArrayList<T> implements List<T> {
      * @param initCapacity - the initial capacity of the list
      * @throws IllegalArgumentException – if the specified initial capacity is negative or 0.
      */
-    public ArrayList(int initCapacity) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+    public ArrayList(int initCapacity) throws IllegalArgumentException {
+        if (initCapacity > 0) {
+            this.list = new Object[initCapacity];
+        } else {
+            throw new IllegalArgumentException("Capacity number is incorrect");
+        }
     }
 
     /**
@@ -28,7 +35,7 @@ public class ArrayList<T> implements List<T> {
      * A default size of inner array is 5;
      */
     public ArrayList() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        this.list = new Object[5];
     }
 
     /**
@@ -37,8 +44,11 @@ public class ArrayList<T> implements List<T> {
      * @param elements to add
      * @return new instance
      */
+    @SafeVarargs
     public static <T> List<T> of(T... elements) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        ArrayList<T> arrayList = new ArrayList<>();
+        Arrays.stream(elements).forEach(arrayList::add);
+        return arrayList;
     }
 
     /**
@@ -48,7 +58,10 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public void add(T element) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (size == list.length) {
+            list = Arrays.copyOf(list, list.length * 2);
+        }
+        list[size++] = element;
     }
 
     /**
@@ -59,8 +72,19 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public void add(int index, T element) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException();
+        } else if (size == list.length) {
+            list = Arrays.copyOf(list, list.length * 2);
+        }
+
+        for (int i = size; i > index; i--) {
+            list[i] = list[i - 1];
+        }
+        list[index] = element;
+        size++;
     }
+
 
     /**
      * Retrieves an element by its position index. In case provided index in out of the list bounds it
@@ -69,9 +93,14 @@ public class ArrayList<T> implements List<T> {
      * @param index index of element
      * @return en element
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T get(int index) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (index < size && index >= 0) {
+            return (T) list[index];
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     /**
@@ -80,9 +109,14 @@ public class ArrayList<T> implements List<T> {
      * @return the first element of the list
      * @throws java.util.NoSuchElementException if list is empty
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T getFirst() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (list.length != 0 && size != 0) {
+            return (T) list[0];
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     /**
@@ -91,9 +125,14 @@ public class ArrayList<T> implements List<T> {
      * @return the last element of the list
      * @throws java.util.NoSuchElementException if list is empty
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T getLast() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (list.length != 0 && size != 0) {
+            return (T) list[size - 1];
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     /**
@@ -105,7 +144,11 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public void set(int index, T element) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (index < size && index >= 0) {
+            list[index] = element;
+        } else {
+            throw new IndexOutOfBoundsException();
+        }
     }
 
     /**
@@ -115,9 +158,22 @@ public class ArrayList<T> implements List<T> {
      * @param index element index
      * @return deleted element
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T remove(int index) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException();
+        }
+
+        T removedElement = (T) list[index];
+
+        for (int i = index; i < size - 1; i++) {
+            list[i] = list[i + 1];
+        }
+        list[size - 1] = null;
+        size--;
+
+        return removedElement;
     }
 
     /**
@@ -128,7 +184,12 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public boolean contains(T element) {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        for (Object el : list) {
+            if (el == element) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -138,7 +199,7 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public boolean isEmpty() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        return size == 0;
     }
 
     /**
@@ -146,7 +207,7 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public int size() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        return size;
     }
 
     /**
@@ -154,6 +215,7 @@ public class ArrayList<T> implements List<T> {
      */
     @Override
     public void clear() {
-        throw new ExerciseNotCompletedException(); // todo: implement this method
+        list = null;
+        size = 0;
     }
 }
